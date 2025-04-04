@@ -1,12 +1,23 @@
-FROM golang:1.22
+# Start with an official Go base image
+FROM golang:1.23
 
+# Set the working directory inside the container
 WORKDIR /app
 
+# Copy go mod and sum files
+COPY go.mod go.sum ./
+
+# Download all dependencies
+RUN go mod tidy
+
+# Copy the rest of the application code
 COPY . .
 
-RUN go mod tidy
-RUN go build -o pocketbase main.go
+# Build the application
+RUN go build -o /app/pocketbase
 
+# Expose the port for the server
 EXPOSE 8090
 
-CMD ["./pocketbase", "serve", "--dir", "pb_data"]
+# Command to run the application
+CMD ["/app/pocketbase", "serve"]
